@@ -1,13 +1,12 @@
 package task2flower;
 
 public abstract class Flower {
-    private String color;
-    private double price;
-    private int daysAfterCut;
-    private int stemLength;
+    private String color = "красный";
+    private double price = 100.0;
+    private int daysAfterCut = 0;
+    private int stemLength = 30;
 
-    protected Flower(String color, double price,
-                     int daysAfterCut, int stemLength) {
+    protected Flower(String color, double price, int daysAfterCut, int stemLength) {
         setColor(color);
         setPrice(price);
         setDaysAfterCut(daysAfterCut);
@@ -20,12 +19,10 @@ public abstract class Flower {
 
     public void setColor(String color) {
         if (color == null || color.trim().isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Цвет не должен быть пустым."
-            );
+            System.out.println("Цвет не может быть пустым. Установлено значение по умолчанию: " + this.color);
+            return;
         }
-
-        this.color = color;
+        this.color = color.trim();
     }
 
     public double getPrice() {
@@ -34,11 +31,9 @@ public abstract class Flower {
 
     public void setPrice(double price) {
         if (!Double.isFinite(price) || price < 0) {
-            throw new IllegalArgumentException(
-                    "Цена должна быть конечной и неотрицательной."
-            );
+            System.out.println("Цена не может быть отрицательной. Установлено значение по умолчанию: " + this.price + " руб.");
+            return;
         }
-
         this.price = price;
     }
 
@@ -48,11 +43,9 @@ public abstract class Flower {
 
     public void setDaysAfterCut(int daysAfterCut) {
         if (daysAfterCut < 0) {
-            throw new IllegalArgumentException(
-                    "Количество дней не может быть отрицательным."
-            );
+            System.out.println("Количество дней не может быть отрицательным. Установлено значение по умолчанию: " + this.daysAfterCut);
+            return;
         }
-
         this.daysAfterCut = daysAfterCut;
     }
 
@@ -62,29 +55,23 @@ public abstract class Flower {
 
     public void setStemLength(int stemLength) {
         if (stemLength <= 0) {
-            throw new IllegalArgumentException(
-                    "Длина стебля должна быть больше нуля."
-            );
+            System.out.println("Длина стебля должна быть больше нуля. Установлено значение по умолчанию: " + this.stemLength + " см.");
+            return;
         }
-
         this.stemLength = stemLength;
     }
 
-    // Свежесть уменьшается на один балл за день.
     public int getFreshness() {
         return Math.max(0, 10 - getDaysAfterCut());
     }
 
-    // Итоговая стоимость с учётом свежести.
     public double getCost() {
         int freshness = getFreshness();
-
         if (freshness <= 4) {
             return getPrice() * 0.5;
         } else if (freshness <= 7) {
             return getPrice() * 0.8;
         }
-
         return getPrice();
     }
 
@@ -92,12 +79,9 @@ public abstract class Flower {
 
     @Override
     public String toString() {
-        return getName()
-                + ", цвет: " + color
-                + ", базовая цена: " + price + " руб."
-                + ", стоимость: " + getCost() + " руб."
-                + ", дней после срезки: " + daysAfterCut
-                + ", свежесть: " + getFreshness() + "/10"
-                + ", длина стебля: " + stemLength + " см";
+        return String.format(
+                "%s, цвет: %s, базовая цена: %.2f руб., стоимость: %.2f руб., дней после срезки: %d, свежесть: %d/10, длина стебля: %d см",
+                getName(), color, price, getCost(), daysAfterCut, getFreshness(), stemLength
+        );
     }
 }

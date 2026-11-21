@@ -10,7 +10,6 @@ public class Bouquet {
         if (accessory == null) {
             return false;
         }
-
         accessories.add(accessory);
         return true;
     }
@@ -19,7 +18,6 @@ public class Bouquet {
         if (flower == null || flower.getFreshness() == 0) {
             return false;
         }
-
         flowers.add(flower);
         return true;
     }
@@ -42,15 +40,12 @@ public class Bouquet {
 
     public double getCost() {
         double total = 0;
-
-        for (int i = 0; i < flowers.size(); i++) {
-            total += flowers.get(i).getCost();
+        for (Flower flower : flowers) {
+            total += flower.getCost();
         }
-
-        for (int i = 0; i < accessories.size(); i++) {
-            total += accessories.get(i).getCost();
+        for (Accessory accessory : accessories) {
+            total += accessory.getCost();
         }
-
         return total;
     }
 
@@ -59,7 +54,6 @@ public class Bouquet {
             for (int j = 0; j < flowers.size() - 1 - i; j++) {
                 Flower left = flowers.get(j);
                 Flower right = flowers.get(j + 1);
-
                 if (left.getFreshness() < right.getFreshness()) {
                     flowers.set(j, right);
                     flowers.set(j + 1, left);
@@ -70,40 +64,40 @@ public class Bouquet {
 
     public ArrayList<Flower> findByStemLength(int min, int max) {
         ArrayList<Flower> found = new ArrayList<>();
-
         if (min < 0 || min > max) {
             return found;
         }
-
-        for (int i = 0; i < flowers.size(); i++) {
-            Flower flower = flowers.get(i);
+        for (Flower flower : flowers) {
             int length = flower.getStemLength();
-
             if (length >= min && length <= max) {
                 found.add(flower);
             }
         }
-
         return found;
     }
 
-    public void print() {
-        System.out.println("\nЦветы:");
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nЦветы:\n");
         if (flowers.isEmpty()) {
-            System.out.println("Цветов пока нет.");
-        }
-        for (int i = 0; i < flowers.size(); i++) {
-            System.out.println((i + 1) + ". " + flowers.get(i));
+            sb.append("Цветов пока нет.\n");
+        } else {
+            for (int i = 0; i < flowers.size(); i++) {
+                sb.append(i + 1).append(". ").append(flowers.get(i)).append("\n");
+            }
         }
 
-        System.out.println("Аксессуары:");
+        sb.append("Аксессуары:\n");
         if (accessories.isEmpty()) {
-            System.out.println("Аксессуаров пока нет.");
-        }
-        for (int i = 0; i < accessories.size(); i++) {
-            System.out.println((i + 1) + ". " + accessories.get(i));
+            sb.append("Аксессуаров пока нет.\n");
+        } else {
+            for (int i = 0; i < accessories.size(); i++) {
+                sb.append(i + 1).append(". ").append(accessories.get(i)).append("\n");
+            }
         }
 
-        System.out.printf("Стоимость букета: %.2f руб.%n", getCost());
+        sb.append(String.format("Стоимость букета: %.2f руб.", getCost()));
+        return sb.toString();
     }
 }

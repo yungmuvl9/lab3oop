@@ -9,73 +9,58 @@ public class FlowerShop {
 
     public static void main(String[] args) {
         Bouquet bouquet = new Bouquet();
-
         while (true) {
-            System.out.println("1 — добавить цветы");
+            System.out.println("\n1 — добавить цветы");
             System.out.println("2 — добавить аксессуар");
             System.out.println("3 — показать букет и стоимость");
             System.out.println("4 — удалить цветок");
             System.out.println("5 — удалить аксессуар");
             System.out.println("6 — отсортировать цветы по свежести");
-            System.out.println("7 — найти цветы по длне стебя");
+            System.out.println("7 — найти цветы по длине стебля");
             System.out.println("0 — завершить заказ");
 
-            int choice = readInt("Ваш выбор: ", 0, 7);
-
+            int choice = readMenuChoice("Ваш выбор: ", 0, 7);
             switch (choice) {
                 case 1:
                     addFlowers(bouquet);
                     break;
-
                 case 2:
                     addAccessory(bouquet);
                     break;
-
                 case 3:
-                    bouquet.print();
+                    System.out.println(bouquet);
                     break;
-
                 case 4:
-                    bouquet.print();
-                    int flowerNumber = readInt(
-                            "Номер цветка: ", 1, Integer.MAX_VALUE
-                    );
-
+                    System.out.println(bouquet);
+                    int flowerNumber = readAnyInt("Номер цветка: ");
                     if (bouquet.removeFlower(flowerNumber)) {
                         System.out.println("Цветок удалён.");
-                        bouquet.print();
+                        System.out.println(bouquet);
                     } else {
                         System.out.println("Цветка с таким номером нет.");
                     }
                     break;
-
                 case 5:
-                    bouquet.print();
-                    int accessoryNumber = readInt(
-                            "Номер аксессуара: ", 1, Integer.MAX_VALUE
-                    );
-
+                    System.out.println(bouquet);
+                    int accessoryNumber = readAnyInt("Номер аксессуара: ");
                     if (bouquet.removeAccessory(accessoryNumber)) {
                         System.out.println("Аксессуар удалён.");
-                        bouquet.print();
+                        System.out.println(bouquet);
                     } else {
                         System.out.println("Аксессуара с таким номером нет.");
                     }
                     break;
-
                 case 6:
                     bouquet.sortByFreshness();
                     System.out.println("Букет после сортировки по свежести:");
-                    bouquet.print();
+                    System.out.println(bouquet);
                     break;
-
                 case 7:
                     findFlowers(bouquet);
                     break;
-
                 case 0:
                     System.out.println("Итоговый состав заказа:");
-                    bouquet.print();
+                    System.out.println(bouquet);
                     return;
             }
         }
@@ -86,98 +71,91 @@ public class FlowerShop {
         System.out.println("2 — тюльпан");
         System.out.println("3 — лилия");
         System.out.println("4 — хризантема");
+        int type = readMenuChoice("Выберите вид цветка: ", 1, 4);
 
-        int type = readInt("Выберите вид цветка: ", 1, 4);
-        int quantity = readInt("Сколько таких цветов? ", 1, Integer.MAX_VALUE);
+        int quantity = readAnyInt("Сколько таких цветов? ");
+        if (quantity <= 0) {
+            System.out.println("Количество должно быть больше нуля. Установлено значение по умолчанию: 1.");
+            quantity = 1;
+        }
 
-        String color = readText("Цвет: ");
-        double price = readPrice("Базовая цена одного цветка в рублях: ");
-        int days = readInt("Дней после срезки: ", 0, Integer.MAX_VALUE);
-        int length = readInt("Длина стебля в см: ", 1, Integer.MAX_VALUE);
+        String color = readLine("Цвет: ");
+        double price = readDouble("Базовая цена одного цветка в рублях: ");
+        int days = readAnyInt("Дней после срезки: ");
+        int length = readAnyInt("Длина стебля в см: ");
 
-        for (int i = 0; i < quantity; i++) {
-            Flower flower;
+        // Первый цветок проверяет и корректирует данные один раз
+        Flower first = createFlower(type, color, price, days, length);
+        if (!bouquet.addFlower(first)) {
+            System.out.println("Цветы этой партии увяли. Партия не добавлена.");
+            return;
+        }
 
-            switch (type) {
-                case 1:
-                    flower = new Rose(color, price, days, length);
-                    break;
-                case 2:
-                    flower = new Tulip(color, price, days, length);
-                    break;
-                case 3:
-                    flower = new Lily(color, price, days, length);
-                    break;
-                default:
-                    flower = new Chrysanthemum(color, price, days, length);
-                    break;
-            }
-
-            if (!bouquet.addFlower(flower)) {
-                System.out.println("Цветы этой партии увяли. Партия не добавлена.");
-                return;
-            }
+        // Остальные создаются уже с проверенными значениями, чтобы не дублировать предупреждения
+        for (int i = 1; i < quantity; i++) {
+            Flower copy = createFlower(
+                    type,
+                    first.getColor(),
+                    first.getPrice(),
+                    first.getDaysAfterCut(),
+                    first.getStemLength()
+            );
+            bouquet.addFlower(copy);
         }
 
         System.out.println("Добавлено цветов: " + quantity);
         System.out.printf("Стоимость букета: %.2f руб.%n", bouquet.getCost());
     }
 
+    private static Flower createFlower(int type, String color, double price, int days, int length) {
+        switch (type) {
+            case 1:
+                return new Rose(color, price, days, length);
+            case 2:
+                return new Tulip(color, price, days, length);
+            case 3:
+                return new Lily(color, price, days, length);
+            default:
+                return new Chrysanthemum(color, price, days, length);
+        }
+    }
+
     private static void addAccessory(Bouquet bouquet) {
         System.out.println("\n1 — лента");
         System.out.println("2 — обёртка");
         System.out.println("3 — корзинка");
-
-        int type = readInt("Выберите аксессуар: ", 1, 3);
-        String color = readText("Цвет аксессуара: ");
+        int type = readMenuChoice("Выберите аксессуар: ", 1, 3);
+        String color = readLine("Цвет аксессуара: ");
 
         Accessory accessory;
-
         switch (type) {
             case 1: {
-                double length = readSize("Длина ленты в см: ");
-                double tariff = readPrice("Цена за метр ленты: ");
-
+                double length = readDouble("Длина ленты в см: ");
+                double tariff = readDouble("Цена за метр ленты: ");
                 accessory = new Lenta(color, length, tariff);
                 break;
             }
-
             case 2: {
-                double length = readSize("Длина листа в см: ");
-                double width = readSize("Ширина листа в см: ");
-                double tariff = readPrice("Цена за квадратный метр обёртки: ");
-
+                double length = readDouble("Длина листа в см: ");
+                double width = readDouble("Ширина листа в см: ");
+                double tariff = readDouble("Цена за квадратный метр обёртки: ");
                 accessory = new Obertka(color, length, width, tariff);
                 break;
             }
-
             default: {
                 System.out.println("1 — пластиковая корзинка");
                 System.out.println("2 — плетёная корзинка из лозы");
-
-                int materialChoice = readInt("Выберите материал: ", 1, 2);
-
-                String material;
-                if (materialChoice == 1) {
-                    material = "пластик";
-                } else {
-                    material = "лоза";
-                }
-
-                double diameter = readSize("Диаметр круглого дна в см: ");
-                double price = readPrice("Цена одной корзинки: ");
-
-                int answer = readInt("Добавить подкладку? 1 — да, 0 — нет: ", 0, 1);
-                boolean hasLiner = answer == 1;
-
+                int materialChoice = readMenuChoice("Выберите материал: ", 1, 2);
+                String material = (materialChoice == 1) ? "пластик" : "лоза";
+                double diameter = readDouble("Диаметр круглого дна в см: ");
+                double price = readDouble("Цена одной корзинки: ");
+                int answer = readMenuChoice("Добавить подкладку? 1 — да, 0 — нет: ", 0, 1);
+                boolean hasLiner = (answer == 1);
                 double linerTariff = 0;
                 if (hasLiner) {
-                    linerTariff = readPrice("Цена за квадратный метр подкладки: ");
+                    linerTariff = readDouble("Цена за квадратный метр подкладки: ");
                 }
-
-                accessory = new Korzinka(
-                        color, material, diameter, price, hasLiner, linerTariff
-                );
+                accessory = new Korzinka(color, material, diameter, price, hasLiner, linerTariff);
                 break;
             }
         }
@@ -188,95 +166,60 @@ public class FlowerShop {
     }
 
     private static void findFlowers(Bouquet bouquet) {
-        int min = readInt("Минимальная длина стебля в см: ", 0, Integer.MAX_VALUE);
-        int max = readInt("Максимальная длина стебля в см: ", min, Integer.MAX_VALUE);
-
+        int min = readAnyInt("Минимальная длина стебля в см: ");
+        int max = readAnyInt("Максимальная длина стебля в см: ");
         ArrayList<Flower> found = bouquet.findByStemLength(min, max);
-
         if (found.isEmpty()) {
             System.out.println("Подходящих цветов нет.");
             return;
         }
-
         System.out.println("Найдено цветов: " + found.size());
         for (int i = 0; i < found.size(); i++) {
             System.out.println((i + 1) + ". " + found.get(i));
         }
     }
 
-    private static String readText(String message) {
+    private static String readLine(String message) {
+        System.out.print(message);
+        return scanner.nextLine();
+    }
+
+    private static int readMenuChoice(String message, int min, int max) {
         while (true) {
-            System.out.print(message);
-            String text = scanner.nextLine().trim();
-
-            if (!text.isEmpty()) {
-                return text;
+            int value = readAnyInt(message);
+            if (value >= min && value <= max) {
+                return value;
             }
-
-            System.out.println("Введите значение.");
+            System.out.println("Введите число от " + min + " до " + max + ".");
         }
     }
 
-    private static int readInt(String message, int min, int max) {
+    private static int readAnyInt(String message) {
         while (true) {
-            String text = readText(message);
-            try (Scanner input = new Scanner(text)) {
-                if (input.hasNextInt()) {
-                    int value = input.nextInt();
-
-                    if (!input.hasNext() && value >= min && value <= max) {
-                        return value;
-                    }
-                }
-            }
-
-            if (max == Integer.MAX_VALUE) {
-                System.out.println("Введите целое число не меньше " + min + ".");
-            } else {
-                System.out.println("Введите целое число от " + min + " до " + max + ".");
+            System.out.print(message);
+            String text = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(text);
+            } catch (NumberFormatException e) {
+                System.out.println("Введите целое число.");
             }
         }
     }
 
     private static double readDouble(String message) {
         while (true) {
-            String text = readText(message).replace(',', '.');
-
+            System.out.print(message);
+            String text = scanner.nextLine().trim().replace(',', '.');
             try (Scanner input = new Scanner(text)) {
                 input.useLocale(Locale.US);
-
                 if (input.hasNextDouble()) {
                     double value = input.nextDouble();
-
                     if (!input.hasNext() && Double.isFinite(value)) {
                         return value;
                     }
                 }
             }
-
             System.out.println("Введите число, например 30 или 12,5.");
         }
-    }
-
-    private static double readSize(String message) {
-        double size = readDouble(message);
-
-        while (size <= 0) {
-            System.out.println("Размер должен быть больше нуля.");
-            size = readDouble(message);
-        }
-
-        return size;
-    }
-
-    private static double readPrice(String message) {
-        double price = readDouble(message);
-
-        while (price < 0) {
-            System.out.println("Цена не может быть отрицательной.");
-            price = readDouble(message);
-        }
-
-        return price;
     }
 }

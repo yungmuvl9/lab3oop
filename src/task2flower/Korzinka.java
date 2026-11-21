@@ -1,21 +1,33 @@
 package task2flower;
 
 public class Korzinka extends Upakovka {
-    private double diameterCm;
+    private double diameterCm = 30.0;
     private boolean hasLiner;
-    private double linerPricePerSquareMeter;
-    private String material;
-    private double price;
-    private double diameterСm = 30.0;
+    private double linerPricePerSquareMeter = 100.0;
+    private String material = "пластик";
 
     public Korzinka(String color, String material, double diameterCm,
-                    double basketPrice, boolean hasLiner,
-                    double linerPricePerSquareMeter) {
+                  double basketPrice, boolean hasLiner,
+                  double linerPricePerSquareMeter) {
         super(color, basketPrice);
-        this.material = material;
-        setDiameterCm(diameterCm);  // Проверка выполняется при создании
-        this.hasLiner = hasLiner;
-        this.linerPricePerSquareMeter = linerPricePerSquareMeter;
+        setMaterial(material);
+        setDiameterCm(diameterCm);
+        setHasLiner(hasLiner);
+        if (hasLiner) {
+            setLinerPricePerSquareMeter(linerPricePerSquareMeter);
+        }
+    }
+
+    public String getMaterial() {
+        return material;
+    }
+
+    public void setMaterial(String material) {
+        if (material == null || material.trim().isEmpty()) {
+            System.out.println("Материал не может быть пустым. Установлено значение по умолчанию: " + this.material);
+            return;
+        }
+        this.material = material.trim();
     }
 
     public double getDiameterCm() {
@@ -24,11 +36,9 @@ public class Korzinka extends Upakovka {
 
     public void setDiameterCm(double diameterCm) {
         if (!Double.isFinite(diameterCm) || diameterCm <= 0) {
-            System.out.println("Диаметр должен быть больше нуля. "
-                    + "Сохранено значение " + this.diameterCm + " см.");
+            System.out.println("Диаметр должен быть больше нуля. Установлено значение по умолчанию: " + this.diameterCm + " см.");
             return;
         }
-
         this.diameterCm = diameterCm;
     }
 
@@ -45,11 +55,11 @@ public class Korzinka extends Upakovka {
     }
 
     public void setLinerPricePerSquareMeter(double price) {
-        if (!Double.isFinite(price) || price <= 0) {
-            System.out.println("цена должна быть положительной. "
-                    + "Сохранено значение " + this.price + " см.");
+        if (!Double.isFinite(price) || price < 0) {
+            System.out.println("Цена подкладки не может быть отрицательной. Установлено значение по умолчанию: " + this.linerPricePerSquareMeter + " руб.");
             return;
         }
+        this.linerPricePerSquareMeter = price;
     }
 
     @Override
@@ -82,14 +92,12 @@ public class Korzinka extends Upakovka {
                 "материал: %s, диаметр дна: %.1f см, цена корзинки: %.2f руб.",
                 material, diameterCm, getUnitPrice()
         );
-
         if (hasLiner) {
             return info + String.format(
-                    ", круглая подкладка: %.4f м? за %.2f руб.",
+                    ", круглая подкладка: %.4f м^2 за %.2f руб.",
                     getAreaSquareMeters(), getLinerCost()
             );
         }
-
         return info + ", без подкладки";
     }
 }

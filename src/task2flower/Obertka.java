@@ -1,11 +1,11 @@
 package task2flower;
 
 public class Obertka extends Upakovka {
-    private double lengthCm;
-    private double widthCm;
+    private double lengthCm = 50.0;
+    private double widthCm = 50.0;
 
     public Obertka(String color, double lengthCm,
-                   double widthCm, double pricePerSquareMeter) {
+                         double widthCm, double pricePerSquareMeter) {
         super(color, pricePerSquareMeter);
         setLengthCm(lengthCm);
         setWidthCm(widthCm);
@@ -16,6 +16,10 @@ public class Obertka extends Upakovka {
     }
 
     public void setLengthCm(double lengthCm) {
+        if (!Double.isFinite(lengthCm) || lengthCm <= 0) {
+            System.out.println("Длина листа должна быть больше нуля. Установлено значение по умолчанию: " + this.lengthCm + " см.");
+            return;
+        }
         this.lengthCm = lengthCm;
     }
 
@@ -24,6 +28,10 @@ public class Obertka extends Upakovka {
     }
 
     public void setWidthCm(double widthCm) {
+        if (!Double.isFinite(widthCm) || widthCm <= 0) {
+            System.out.println("Ширина листа должна быть больше нуля. Установлено значение по умолчанию: " + this.widthCm + " см.");
+            return;
+        }
         this.widthCm = widthCm;
     }
 
@@ -34,7 +42,6 @@ public class Obertka extends Upakovka {
 
     @Override
     public double getAreaSquareMeters() {
-        // Длина и ширина заданы в сантиметрах
         return lengthCm * widthCm / 10_000.0;
     }
 

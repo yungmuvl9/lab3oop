@@ -1,7 +1,7 @@
 package task2flower;
 
 public class Lenta extends Accessory {
-    private double lengthCm;
+    private double lengthCm = 50.0;
 
     public Lenta(String color, double lengthCm, double pricePerMeter) {
         super(color, pricePerMeter);
@@ -12,8 +12,11 @@ public class Lenta extends Accessory {
         return lengthCm;
     }
 
-    public void setLengthCm(double lengthCm)
-    {
+    public void setLengthCm(double lengthCm) {
+        if (!Double.isFinite(lengthCm) || lengthCm <= 0) {
+            System.out.println("Длина ленты должна быть больше нуля. Установлено значение по умолчанию: " + this.lengthCm + " см.");
+            return;
+        }
         this.lengthCm = lengthCm;
     }
 
